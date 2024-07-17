@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+  <div id="main-container">
+    {% include 'nav.html.twig' %}
+
+         <main>
+            <header>
+               <div id="current-user"></div>
+               <div id="title-page">
+                  <h1>Projets</h1>
+               </div>
+            </header>
+            <div id="content">
+               <div id="projects-container">
+                    {% for projet in projets %}
+                        <article class="card-project">
+                            <a href="projet.html">
+                                <h2>{{projet.nom}}</h2>
+                            </a>
+                            <div class="card-project-icons">
+                                <a href="projet-edit.html"><i class="fa-solid fa-pen"></i></a>
+                                <a href="#"><i class="fa-solid fa-trash"></i></a>
+                            </div>
+                        </article>                       
+                    {% endfor %}
+                  <article class="card-project">
+                     <a href="projet-add.html">
+                        <i class="fa-solid fa-circle-plus add-project-icon"></i>
+                        <h2>Ajouter un projet</h2>
+                     </a>
+                  </article>
+               </div>
+            </div>
+         </main>
+  </div>
+{% endblock %}
