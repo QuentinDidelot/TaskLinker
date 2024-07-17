@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\EmployeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Enum\EmployeRole;
@@ -38,6 +40,17 @@ class Employe
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
+
+    /**
+     * @var Collection<int, Projet>
+     */
+    #[ORM\ManyToMany(targetEntity: Projet::class)]
+    private Collection $projet;
+
+    public function __construct()
+    {
+        $this->projet = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -136,6 +149,30 @@ class Employe
     public function setPassword(string $password): static
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Projet>
+     */
+    public function getProjet(): Collection
+    {
+        return $this->projet;
+    }
+
+    public function addProjet(Projet $projet): static
+    {
+        if (!$this->projet->contains($projet)) {
+            $this->projet->add($projet);
+        }
+
+        return $this;
+    }
+
+    public function removeProjet(Projet $projet): static
+    {
+        $this->projet->removeElement($projet);
 
         return $this;
     }

@@ -24,6 +24,11 @@ class Etiquette
     #[ORM\ManyToMany(targetEntity: Tache::class)]
     private Collection $tache;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Projet $projet = null;
+
+
     public function __construct()
     {
         $this->tache = new ArrayCollection();
@@ -69,4 +74,17 @@ class Etiquette
 
         return $this;
     }
+
+    public function getProjet(): ?Projet
+    {
+        return $this->projet;
+    }
+
+    public function setProjet(?Projet $projet): static
+    {
+        $this->projet = $projet;
+
+        return $this;
+    }
+
 }

@@ -23,6 +23,17 @@ class Tache
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $deadline = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Statut $statut = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Projet $projet = null;
+
+    #[ORM\ManyToOne]
+    private ?Employe $employe = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -60,6 +71,42 @@ class Tache
     public function setDeadline(\DateTimeInterface $deadline): static
     {
         $this->deadline = $deadline;
+
+        return $this;
+    }
+
+    public function getStatut(): ?Statut
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(?Statut $statut): static
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getProjet(): ?Projet
+    {
+        return $this->projet;
+    }
+
+    public function setProjet(?Projet $projet): static
+    {
+        $this->projet = $projet;
+
+        return $this;
+    }
+
+    public function getEmploye(): ?Employe
+    {
+        return $this->employe;
+    }
+
+    public function setEmploye(?Employe $employe): static
+    {
+        $this->employe = $employe;
 
         return $this;
     }
