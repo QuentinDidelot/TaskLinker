@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Projet
 {
     #[ORM\Id]
@@ -26,6 +27,22 @@ class Projet
     #[ORM\Column]
     private ?bool $archive = null;
 
+    #[ORM\PrePersist]
+    public function setDefaultValues(): void
+    {
+        if ($this->date_demarrage === null) {
+            $this->date_demarrage = new \DateTime();
+        }
+
+        if ($this->archive === null) {
+            $this->archive = true;
+        }
+
+        if ($this->deadline === null) {
+            $this->deadline = (new \DateTime())->modify('+2 weeks');
+        }
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -39,7 +56,6 @@ class Projet
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
@@ -51,7 +67,6 @@ class Projet
     public function setDateDemarrage(\DateTimeInterface $date_demarrage): static
     {
         $this->date_demarrage = $date_demarrage;
-
         return $this;
     }
 
@@ -63,7 +78,6 @@ class Projet
     public function setDeadline(\DateTimeInterface $deadline): static
     {
         $this->deadline = $deadline;
-
         return $this;
     }
 
@@ -75,7 +89,6 @@ class Projet
     public function setArchive(bool $archive): static
     {
         $this->archive = $archive;
-
         return $this;
     }
 }

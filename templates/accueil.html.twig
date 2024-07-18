@@ -1,9 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-  <div id="main-container">
-    {% include 'nav.html.twig' %}
-
+   {% include 'nav.html.twig' %}
          <main>
             <header>
                <div id="current-user"></div>
@@ -25,7 +23,7 @@
                         </article>                       
                     {% endfor %}
                   <article class="card-project">
-                     <a href="projet-add.html">
+                     <a href="{{path('app_add_project')}} ">
                         <i class="fa-solid fa-circle-plus add-project-icon"></i>
                         <h2>Ajouter un projet</h2>
                      </a>

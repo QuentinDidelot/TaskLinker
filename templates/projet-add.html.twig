@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% include 'nav.html.twig' %}
+    <main>
+        <header>
+            <div id="current-user"></div>
+            <div id="title-page">
+                <h1>Nouveau projet</h1>
+            </div>
+        </header>
+        <div id="content">
+        {{ form_start(form) }}
+            {{ form_row(form.nom) }}
+            {{ form_row(form.employe) }}
+            <br>
+            <button class="button button-submit">Continuer</button>
+        {{ form_end(form) }}
+        </div>
+    </main>
+{% endblock %}
