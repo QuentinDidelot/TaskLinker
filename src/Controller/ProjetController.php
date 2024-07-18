@@ -40,5 +40,22 @@ class ProjetController extends AbstractController {
         }
         return $this->render('projet-add.html.twig', ['form' => $form->createView()]);
     }
+
+
+    /**
+     * Suppression d'un projet
+     */
+    #[Route('/projet-delete/{id}', name: 'app_delete_project')]
+    public function deleteProject($id): Response {
+
+        $projet = $this->projetRepository->find($id);
+        if (!$projet) {
+            throw $this->createNotFoundException('Aucun projet trouvé avec cet identifiant.');
+        }
+        $this->entityManager->remove($projet);
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('app_home');
+    }
 }
 
