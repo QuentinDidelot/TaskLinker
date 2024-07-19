@@ -44,12 +44,12 @@ class Employe
     /**
      * @var Collection<int, Projet>
      */
-    #[ORM\ManyToMany(targetEntity: Projet::class)]
-    private Collection $projet;
+    #[ORM\ManyToMany(targetEntity: Projet::class, inversedBy: 'employes')]
+    private Collection $projets;
 
     public function __construct()
     {
-        $this->projet = new ArrayCollection();
+        $this->projets = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -156,15 +156,16 @@ class Employe
     /**
      * @return Collection<int, Projet>
      */
-    public function getProjet(): Collection
+    public function getProjets(): Collection
     {
-        return $this->projet;
+        return $this->projets;
     }
 
     public function addProjet(Projet $projet): static
     {
-        if (!$this->projet->contains($projet)) {
-            $this->projet->add($projet);
+        if (!$this->projets->contains($projet)) {
+            $this->projets->add($projet);
+            $projet->addEmploye($this);
         }
 
         return $this;
@@ -172,7 +173,9 @@ class Employe
 
     public function removeProjet(Projet $projet): static
     {
-        $this->projet->removeElement($projet);
+        if ($this->projets->removeElement($projet)) {
+            $projet->removeEmploye($this);
+        }
 
         return $this;
     }

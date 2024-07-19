@@ -4,11 +4,12 @@ namespace App\Form;
 
 use App\Entity\Projet;
 use App\Entity\Employe;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class ProjetType extends AbstractType
 {
@@ -21,13 +22,16 @@ class ProjetType extends AbstractType
                     'autocomplete' => 'off',
                 ],
             ])
-            ->add('employe', EntityType::class, [
+            ->add('employes', EntityType::class, [
                 'class' => Employe::class,
                 'label' => 'Inviter des membres',
                 'choice_label' => 'nom',
                 'multiple' => true,
                 'expanded' => false,
-                'mapped' => false,
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('e')
+                        ->orderBy('e.nom', 'ASC');
+                },
             ]);
     }
 

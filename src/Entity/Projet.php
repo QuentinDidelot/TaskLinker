@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProjetRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -41,6 +43,17 @@ class Projet
         if ($this->deadline === null) {
             $this->deadline = (new \DateTime())->modify('+2 weeks');
         }
+    }
+
+    /**
+     * @var Collection<int, Employe>
+     */
+    #[ORM\ManyToMany(targetEntity: Employe::class, mappedBy: 'projets')]
+    private Collection $employes;
+
+    public function __construct()
+    {
+        $this->employes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -89,6 +102,33 @@ class Projet
     public function setArchive(bool $archive): static
     {
         $this->archive = $archive;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Employe>
+     */
+    public function getEmployes(): Collection
+    {
+        return $this->employes;
+    }
+
+    public function addEmploye(Employe $employe): static
+    {
+        if (!$this->employes->contains($employe)) {
+            $this->employes->add($employe);
+            $employe->addProjet($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEmploye(Employe $employe): static
+    {
+        if ($this->employes->removeElement($employe)) {
+            $employe->removeProjet($this);
+        }
+
         return $this;
     }
 }
