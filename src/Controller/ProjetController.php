@@ -105,7 +105,9 @@ class ProjetController extends AbstractController {
             throw $this->createNotFoundException('Aucun projet trouvé avec cet identifiant.');
         }
 
-        $this->entityManager->remove($projet);
+        $projet->setArchive(true);
+
+        $this->entityManager->persist($projet);
         $this->entityManager->flush();
 
         return $this->redirectToRoute('app_home');

@@ -37,7 +37,7 @@ class Projet
         }
 
         if ($this->archive === null) {
-            $this->archive = true;
+            $this->archive = false;
         }
 
         if ($this->deadline === null) {

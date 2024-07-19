@@ -21,12 +21,12 @@ class MainController extends AbstractController
     }
 
     /**
-     * Page d'accueil avec tous les projets
+     * Page d'accueil avec tous les projets non archivés
      */
     #[Route('/', name: 'app_home')]
     public function index(): Response
     {
-        $projets = $this->projetRepository->findAll();
+        $projets = $this->projetRepository->findBy(['archive' => false]);
         return $this->render('accueil.html.twig', ['projets' => $projets]);
     }
 
