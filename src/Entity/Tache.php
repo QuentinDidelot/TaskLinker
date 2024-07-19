@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\TacheRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TacheRepository::class)]
@@ -17,13 +16,13 @@ class Tache
     #[ORM\Column(length: 255)]
     private ?string $titre = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: 'text')]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: 'date')]
     private ?\DateTimeInterface $deadline = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Statut::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?Statut $statut = null;
 
@@ -47,7 +46,6 @@ class Tache
     public function setTitre(string $titre): static
     {
         $this->titre = $titre;
-
         return $this;
     }
 
@@ -59,7 +57,6 @@ class Tache
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -71,7 +68,6 @@ class Tache
     public function setDeadline(\DateTimeInterface $deadline): static
     {
         $this->deadline = $deadline;
-
         return $this;
     }
 
@@ -83,7 +79,6 @@ class Tache
     public function setStatut(?Statut $statut): static
     {
         $this->statut = $statut;
-
         return $this;
     }
 
@@ -95,7 +90,6 @@ class Tache
     public function setProjet(?Projet $projet): static
     {
         $this->projet = $projet;
-
         return $this;
     }
 
@@ -107,7 +101,6 @@ class Tache
     public function setEmploye(?Employe $employe): static
     {
         $this->employe = $employe;
-
         return $this;
     }
 }

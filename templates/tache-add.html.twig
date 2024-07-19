@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+   {% include 'nav.html.twig' %}
+
+ 
+         <main>
+            <header>
+               <div id="current-user"></div>
+               <div id="title-page">
+                  <h1>Créer une tâche</h1>
+               </div>
+            </header>
+            <div id="content">
+                {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    <button type="submit" class="button button-submit">Ajouter</button>
+                {{ form_end(form) }}
+                <br>
+                {% for error in form_errors(form) %}
+                    <div class="alert alert-danger">{{ error.message }}</div>
+                {% endfor %}
+            </div>
+         </main>
+{% endblock %}

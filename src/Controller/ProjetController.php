@@ -91,8 +91,6 @@ class ProjetController extends AbstractController {
     }
 
 
-
-
     /**
      * Suppression d'un projet
      */
@@ -111,6 +109,25 @@ class ProjetController extends AbstractController {
         $this->entityManager->flush();
 
         return $this->redirectToRoute('app_home');
+    }
+
+    /**
+     * Affiche les détails d'un projet
+     */
+    #[Route('/projet-details/{id}', name: 'app_details_project')]
+    public function detailsProject($id): Response {
+
+        $projet = $this->projetRepository->find($id);
+
+        if (!$projet) {
+            throw $this->createNotFoundException('Aucun projet trouvé avec cet identifiant.');
+        }
+
+        return $this->render('projet.html.twig', [
+            'projetId' => $id,
+            'projet' => $projet,
+        ]);
+
     }
 }
 
