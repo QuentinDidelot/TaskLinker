@@ -30,7 +30,8 @@ class Tache
     #[ORM\JoinColumn(nullable: false)]
     private ?Projet $projet = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Employe::class, inversedBy: 'taches')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Employe $employe = null;
 
     public function getId(): ?int

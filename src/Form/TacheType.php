@@ -20,10 +20,16 @@ class TacheType extends AbstractType
         $builder
             ->add('titre', TextType::class, [
                 'label' => 'Titre de la tâche',
+                'attr' => [
+                    'autocomplete' => 'off',
+                ],
             ])
             ->add('description', TextareaType::class, [
                 'required' => false,
                 'label' => 'Description',
+                'attr' => [
+                    'autocomplete' => 'off',
+                ],
             ])
             ->add('deadline', DateType::class, [
                 'required' => false,

@@ -41,6 +41,7 @@ class Employe
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
+
     public function getInitiales(): string
     {
         return strtoupper(substr($this->prenom, 0, 1) . substr($this->nom, 0, 1));

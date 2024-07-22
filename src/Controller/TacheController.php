@@ -56,7 +56,7 @@ class TacheController extends AbstractController
     }
 
     /**
-     * Afficher les détails d'une tâche
+     * Afficher les détails d'une tâche et la possibilité de la modifier
      */
     #[Route('/tache/{id}', name: 'app_tache_detail')]
     public function detailTache(int $id, TacheRepository $tacheRepository, Request $request): Response
@@ -93,7 +93,6 @@ class TacheController extends AbstractController
     {
         $tache = $this->entityManager->getRepository(Tache::class)->find($id);
         $projet = $tache->getProjet();
-        
         if (!$tache) {
             throw $this->createNotFoundException('Aucune tâche trouvée avec cet identifiant.');
         }
