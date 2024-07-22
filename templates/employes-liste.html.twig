@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+   {% include 'nav.html.twig' %}
+
+<main>
+    <header>
+        <div id="current-user"></div>
+        <div id="title-page">
+            <h1>Équipe</h1>
+        </div>
+    </header>
+    <div id="content">
+        <table id="team-container">
+            <thead>
+                <tr>
+                    <th>Prénom, Nom</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employe in employes %}
+                    <tr>
+                        <td>
+                            <div class="employee-infos">
+                                <div class="employee-avatar">
+                                    {{ employe.getInitiales()}}
+                                </div>
+                                <div class="employee-coords">
+                                    <strong>{{ employe.prenom }} {{ employe.nom }}</strong>
+                                    <span>{{ employe.email }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ employe.contrat }}</td>
+                        <td>
+                            <a class="button button-edit-team" href="">
+                                Éditer
+                            </a>
+                            <a class="delete-team" href="">
+                                Supprimer
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}

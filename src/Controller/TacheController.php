@@ -2,7 +2,6 @@
 namespace App\Controller;
 
 use App\Entity\Tache;
-use App\Entity\Statut;
 use App\Entity\Projet;
 use App\Form\TacheType;
 use App\Repository\TacheRepository;
