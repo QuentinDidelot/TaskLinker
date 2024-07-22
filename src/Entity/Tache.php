@@ -38,6 +38,11 @@ class Tache
         return $this->id;
     }
 
+    public function getStatutLibelle(): ?string
+{
+    return $this->statut ? $this->statut->getLibelle() : null;
+}
+
     public function getTitre(): ?string
     {
         return $this->titre;
