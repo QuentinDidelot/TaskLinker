@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Employe;
 use App\Entity\Statut;
 use App\Entity\Tache;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,6 +18,7 @@ class TacheType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+
         $builder
             ->add('titre', TextType::class, [
                 'label' => 'Titre de la tâche',
@@ -48,6 +50,13 @@ class TacheType extends AbstractType
                 },
                 'required' => false,
                 'label' => 'Membre',
+                'query_builder' => function (EntityRepository $er) use ($options) {
+                    return $er->createQueryBuilder('t')
+                        ->leftJoin('t.projets' , 'p')
+                        ->where('p.id = :projet_id')
+                        ->setParameter(':projet_id', $options['projet_id'] )
+                        ->orderBy('t.nom', 'ASC');
+                },
             ]);
     }
 
@@ -55,6 +64,7 @@ class TacheType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Tache::class,
+            'projet_id' => null,
         ]);
     }
 }

@@ -39,7 +39,7 @@ class TacheController extends AbstractController
         $tache = new Tache();
         $tache->setProjet($projet);
 
-        $form = $this->createForm(TacheType::class, $tache);
+        $form = $this->createForm(TacheType::class, $tache, ['projet_id' => $projetId]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

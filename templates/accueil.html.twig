@@ -18,7 +18,7 @@
                             </a>
                             <div class="card-project-icons">
                                 <a href="{{path('app_edit_project', {id:projet.id}) }}"><i class="fa-solid fa-pen"></i></a>
-                                <a href="{{path('app_delete_project', {id:projet.id}) }}"><i class="fa-solid fa-trash"></i></a>
+                                <a href="{{path('app_delete_project', {id:projet.id}) }}" onclick="javascript : return confirm('Êtes-vous sûr de vouloir archiver ce projet ?')"><i class="fa-solid fa-trash"></i></a>
                             </div>
                         </article>                       
                     {% endfor %}
