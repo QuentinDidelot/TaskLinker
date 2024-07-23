@@ -1,5 +1,7 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Liste des employés | TaskLinker{% endblock %}
+
 {% block body %}
    {% include 'nav.html.twig' %}
 
@@ -35,10 +37,10 @@
                         </td>
                         <td>{{ employe.contrat }}</td>
                         <td>
-                            <a class="button button-edit-team" href="">
+                            <a class="button button-edit-team" href="{{path('app_employe_detail', {id:employe.id} ) }}">
                                 Éditer
                             </a>
-                            <a class="delete-team" href="">
+                            <a class="delete-team" href="{{path('app_employe_delete', {id:employe.id} ) }}">
                                 Supprimer
                             </a>
                         </td>

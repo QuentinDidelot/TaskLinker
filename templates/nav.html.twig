@@ -1,18 +1,18 @@
 <div id="main-container">
-  <nav>
+<nav>
     <a href="{{ path('app_home') }}" id="logo">
-      <img src="{{ asset('styles/img/logo.png') }}" alt="Logo TaskLinker" />
+        <img src="{{ asset('styles/img/logo.png') }}" alt="Logo TaskLinker" />
     </a>
-      <ul id="main-menu">
-          <li class="active">
-              <a href="{{ path('app_home') }}">
-              <i class="fa-solid fa-list-check"></i> Projets
-              </a>
-          </li>
-          <li>
-              <a href="{{path('app_employe_list')}}">
-              <i class="fa-regular fa-user"></i> Équipe
-              </a>
-          </li>
-      </ul>
-  </nav>
+    <ul id="main-menu">
+        <li class="{% if app.request.attributes.get('_route') == 'app_home' %}active{% endif %}">
+            <a href="{{ path('app_home') }}">
+                <i class="fa-solid fa-list-check"></i> Projets
+            </a>
+        </li>
+        <li class="{% if app.request.attributes.get('_route') == 'app_employe_list' %}active{% endif %}">
+            <a href="{{ path('app_employe_list') }}">
+                <i class="fa-regular fa-user"></i> Équipe
+            </a>
+        </li>
+    </ul>
+</nav>
