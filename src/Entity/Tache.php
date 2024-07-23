@@ -31,7 +31,7 @@ class Tache
     private ?Projet $projet = null;
 
     #[ORM\ManyToOne(targetEntity: Employe::class, inversedBy: 'taches')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Employe $employe = null;
 
     public function getId(): ?int
@@ -40,9 +40,9 @@ class Tache
     }
 
     public function getStatutLibelle(): ?string
-{
-    return $this->statut ? $this->statut->getLibelle() : null;
-}
+    {
+        return $this->statut ? $this->statut->getLibelle() : null;
+    }
 
     public function getTitre(): ?string
     {

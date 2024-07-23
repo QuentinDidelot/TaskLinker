@@ -26,7 +26,7 @@ class Employe
     #[ORM\Column(length: 255)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, enumType: EmployeRole::class)]
     private ?EmployeRole $role = null;
 
     #[ORM\Column(length: 255)]
@@ -41,20 +41,15 @@ class Employe
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
+    #[ORM\OneToMany(mappedBy: 'employe', targetEntity: Tache::class)]
+    private Collection $taches;
 
-    public function getInitiales(): string
-    {
-        return strtoupper(substr($this->prenom, 0, 1) . substr($this->nom, 0, 1));
-    }
-    
-    /**
-     * @var Collection<int, Projet>
-     */
     #[ORM\ManyToMany(targetEntity: Projet::class, inversedBy: 'employes')]
     private Collection $projets;
 
     public function __construct()
     {
+        $this->taches = new ArrayCollection();
         $this->projets = new ArrayCollection();
     }
 
@@ -71,7 +66,6 @@ class Employe
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
@@ -83,7 +77,6 @@ class Employe
     public function setPrenom(string $prenom): static
     {
         $this->prenom = $prenom;
-
         return $this;
     }
 
@@ -95,7 +88,6 @@ class Employe
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
@@ -107,7 +99,6 @@ class Employe
     public function setRole(EmployeRole $role): static
     {
         $this->role = $role;
-
         return $this;
     }
 
@@ -119,7 +110,6 @@ class Employe
     public function setContrat(string $contrat): static
     {
         $this->contrat = $contrat;
-
         return $this;
     }
 
@@ -131,7 +121,6 @@ class Employe
     public function setDateArrivee(\DateTimeInterface $date_arrivee): static
     {
         $this->date_arrivee = $date_arrivee;
-
         return $this;
     }
 
@@ -143,7 +132,6 @@ class Employe
     public function setActif(bool $actif): static
     {
         $this->actif = $actif;
-
         return $this;
     }
 
@@ -155,6 +143,39 @@ class Employe
     public function setPassword(string $password): static
     {
         $this->password = $password;
+        return $this;
+    }
+
+    public function getInitiales(): string
+    {
+        return strtoupper(substr($this->prenom, 0, 1) . substr($this->nom, 0, 1));
+    }
+
+    /**
+     * @return Collection<int, Tache>
+     */
+    public function getTaches(): Collection
+    {
+        return $this->taches;
+    }
+
+    public function addTache(Tache $tache): static
+    {
+        if (!$this->taches->contains($tache)) {
+            $this->taches->add($tache);
+            $tache->setEmploye($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTache(Tache $tache): static
+    {
+        if ($this->taches->removeElement($tache)) {
+            if ($tache->getEmploye() === $this) {
+                $tache->setEmploye(null);
+            }
+        }
 
         return $this;
     }
