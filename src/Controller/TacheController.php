@@ -48,10 +48,10 @@ class TacheController extends AbstractController
             $entityManager->persist($tache);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('app_project');
         }
 
-        return $this->render('tache-add.html.twig', [
+        return $this->render('tache/templates/tache-add.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -80,7 +80,7 @@ class TacheController extends AbstractController
             return $this->redirectToRoute('app_project_details', ['id' => $projet->getId()]);
         }
 
-        return $this->render('tache-detail.html.twig', [
+        return $this->render('tache/tache-detail.html.twig', [
             'tache' => $tache,
             'form' => $form->createView(),
         ]);

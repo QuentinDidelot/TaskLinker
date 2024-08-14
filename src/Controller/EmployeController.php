@@ -33,7 +33,7 @@ class EmployeController extends AbstractController
         // Récupération des employés dans une base de données
         $employes = $this->employeRepository->findAll();
         
-        return $this->render('employes-liste.html.twig', ['employes' => $employes]);
+        return $this->render('employe/employes-liste.html.twig', ['employes' => $employes]);
     }
 
     /**
@@ -59,7 +59,7 @@ class EmployeController extends AbstractController
             return $this->redirectToRoute('app_employe_detail', ['id' => $employe->getId()]);
         }
 
-        return $this->render('employes-details.html.twig', [
+        return $this->render('employe/employes-details.html.twig', [
             'employe' => $employe,
             'form' => $form->createView()]);
     }

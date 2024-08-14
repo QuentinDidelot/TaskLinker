@@ -25,6 +25,17 @@ class ProjetController extends AbstractController {
         $this->entityManager = $entityManager;
     }
 
+
+    /**
+     * Page d'accueil avec tous les projets non archivés
+     */
+    #[Route('/', name: '')]
+    public function index(): Response
+    {
+        $projets = $this->projetRepository->findBy(['archive' => false]);
+        return $this->render('projet/projet-liste.html.twig', ['projets' => $projets]);
+    }
+
     /**
      * Formulaire de création d'un nouveau projet
      */
@@ -43,10 +54,10 @@ class ProjetController extends AbstractController {
             $this->entityManager->persist($projet);
             $this->entityManager->flush();
 
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('app_project');
         }
 
-        return $this->render('projet-add.html.twig', ['form' => $form->createView()]);
+        return $this->render('projet/projet-add.html.twig', ['form' => $form->createView()]);
     }
 
     /**
@@ -86,10 +97,10 @@ class ProjetController extends AbstractController {
             $entityManager->persist($projet);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('app_project');
         }
 
-        return $this->render('projet-edit.html.twig', [
+        return $this->render('projet/projet-edit.html.twig', [
             'form' => $form->createView(),
             'projet' => $projet,
         ]);
@@ -125,7 +136,7 @@ class ProjetController extends AbstractController {
             }
         }
 
-        return $this->render('projet.html.twig', [
+        return $this->render('projet/projet.html.twig', [
             'projetId' => $id,
             'projet' => $projet,
             'tachesParStatut' => $tachesParStatut,
@@ -150,7 +161,7 @@ class ProjetController extends AbstractController {
         $this->entityManager->persist($projet);
         $this->entityManager->flush();
 
-        return $this->redirectToRoute('app_home');
+        return $this->redirectToRoute('app_project');
     }
 
 }
