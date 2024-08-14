@@ -54,7 +54,7 @@ class MainController extends AbstractController
             return $this->redirectToRoute('app_bienvenue');
         }
     
-        return $this->render('inscription/inscription.html.twig', ['form' => $form->createView()]);
+        return $this->render('connexion/inscription.html.twig', ['form' => $form->createView()]);
     }
     
 
