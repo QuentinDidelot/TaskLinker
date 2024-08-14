@@ -15,7 +15,7 @@
                 {{ form_widget(form) }}
                 </br>
                 <button class="button button-submit">Modifier</button>
-                <a href="{{path('app_delete_tache', {id: tache.id} )}}" class="delete-task">Supprimer la tâche</a>
+                <a href="{{path('app_tache_delete', {id: tache.id} )}}" class="delete-task">Supprimer la tâche</a>
                 {{ form_end(form) }}
             </div>
         </main>

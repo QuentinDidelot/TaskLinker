@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/tache}', name: 'app_tache')]
+
 class TacheController extends AbstractController
 {
 
@@ -27,7 +29,7 @@ class TacheController extends AbstractController
     /**
      * Ajouter une nouvelle tâche au projet
      */
-    #[Route('/tache/ajouter/{projetId}', name: 'app_add_tache')]
+    #[Route('/ajouter/{projetId}', name: '_add')]
     public function addTache(int $projetId, Request $request, EntityManagerInterface $entityManager): Response
     {
         $projet = $entityManager->getRepository(Projet::class)->find($projetId);
@@ -57,7 +59,7 @@ class TacheController extends AbstractController
     /**
      * Afficher les détails d'une tâche et la possibilité de la modifier
      */
-    #[Route('/tache/{id}', name: 'app_tache_detail')]
+    #[Route('/{id}', name: '_detail')]
     public function detailTache(int $id, TacheRepository $tacheRepository, Request $request): Response
     {
         $tache = $tacheRepository->find($id);
@@ -75,7 +77,7 @@ class TacheController extends AbstractController
             $this->entityManager->persist($tache);
             $this->entityManager->flush();
 
-            return $this->redirectToRoute('app_details_project', ['id' => $projet->getId()]);
+            return $this->redirectToRoute('app_project_details', ['id' => $projet->getId()]);
         }
 
         return $this->render('tache-detail.html.twig', [
@@ -87,7 +89,7 @@ class TacheController extends AbstractController
     /**
      * Supprimer une tâche
      */
-    #[Route('/tache-delete/{id}', name: 'app_delete_tache')]
+    #[Route('_delete/{id}', name: '_delete')]
     public function deleteTache(int $id, EntityManagerInterface $entityManager): Response
     {
         $tache = $this->entityManager->getRepository(Tache::class)->find($id);
@@ -99,6 +101,6 @@ class TacheController extends AbstractController
         $this->entityManager->remove($tache);
         $this->entityManager->flush();
 
-        return $this->redirectToRoute('app_details_project', ['id' => $projet->getId()]);;
+        return $this->redirectToRoute('app_project_details', ['id' => $projet->getId()]);;
     }
 }

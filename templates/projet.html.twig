@@ -15,7 +15,7 @@
                      <div class="avatar">{{ employe.getInitiales() }}</div>
                   {% endfor %}
                </div>
-               <a class="button" href="{{ path('app_edit_project', { id: projet.id }) }}">Modifier</a>
+               <a class="button" href="{{ path('app_project_edit', { id: projet.id }) }}">Modifier</a>
             </div>
          </div>
       </header>
@@ -41,7 +41,7 @@
                            </div>
                         </a>
                      {% endfor %}
-                     <a href="{{ path('app_add_tache', { projetId: projet.id }) }}" class="task-add">
+                     <a href="{{ path('app_tache_add', { projetId: projet.id }) }}" class="task-add">
                         + Ajouter une tâche
                      </a>
                   </div>

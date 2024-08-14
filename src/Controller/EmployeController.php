@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Employe;
 use App\Form\EmployeType;
 
+#[Route('/employe', name: 'app_employe')]
 
 class EmployeController extends AbstractController
 {
@@ -26,7 +27,7 @@ class EmployeController extends AbstractController
     /**
      * Afficher la liste des employés
      */
-    #[Route('/employe', name: 'app_employe_list')]
+    #[Route('', name: '_list')]
     public function showAllEmploye(): Response
     {
         // Récupération des employés dans une base de données
@@ -38,7 +39,7 @@ class EmployeController extends AbstractController
     /**
      * Afficher les détails d'un employé avec la possibilité de le modifier
      */
-    #[Route('/employe/{id}', name: 'app_employe_detail')]
+    #[Route('/{id}', name: '_detail')]
     public function detailEmploye(int $id, Request $request): Response {
         $employe = $this->employeRepository->find($id);
 
@@ -66,7 +67,7 @@ class EmployeController extends AbstractController
     /**
      * Supprimer un employé
      */
-    #[Route('/employe/{id}/delete', name: 'app_employe_delete')] 
+    #[Route('/{id}/delete', name: '_delete')] 
     public function deleteEmploye(int $id): Response {
         $employe = $this->employeRepository->find($id);
 

@@ -13,6 +13,7 @@ use App\Form\ProjetType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 
+#[Route('/projet', name: 'app_project')]
 
 class ProjetController extends AbstractController {
 
@@ -27,7 +28,7 @@ class ProjetController extends AbstractController {
     /**
      * Formulaire de création d'un nouveau projet
      */
-    #[Route('/projet-add', name: 'app_add_project')]
+    #[Route('_add', name: '_add')]
     public function addProject(Request $request): Response
     {
         $projet = new Projet();
@@ -51,7 +52,7 @@ class ProjetController extends AbstractController {
     /**
      * Formulaire de modification d'un projet existant
      */
-    #[Route('/projet-edit/{id}', name: 'app_edit_project')]
+    #[Route('_edit/{id}', name: '_edit')]
     public function editProject($id, Request $request, EntityManagerInterface $entityManager): Response
     {
         $projet = $entityManager->getRepository(Projet::class)->find($id);
@@ -98,7 +99,7 @@ class ProjetController extends AbstractController {
     /**
      * Affiche les détails d'un projet et les tâches associées
      */
-    #[Route('/projet-details/{id}', name: 'app_details_project')]
+    #[Route('_details/{id}', name: '_details')]
     public function detailsProject($id): Response {
 
         $projet = $this->projetRepository->find($id);
@@ -135,7 +136,7 @@ class ProjetController extends AbstractController {
     /**
      * Archiver un projet
      */
-    #[Route('/projet-delete/{id}', name: 'app_delete_project')]
+    #[Route('_delete/{id}', name: '_delete')]
     public function deleteProject($id): Response {
 
         $projet = $this->projetRepository->find($id);
