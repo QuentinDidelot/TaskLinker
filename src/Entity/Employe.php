@@ -13,7 +13,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: EmployeRepository::class)]
-#[UniqueEntity(fields: ['email'], message: 'This email is already in use.')]
+#[UniqueEntity(fields: ['email'], message: 'Cet email est déjà utilisé')]
 class Employe implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -159,7 +159,7 @@ class Employe implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return (string) $this->email;
     }
-    
+
     public function getRoles(): array
     {
 

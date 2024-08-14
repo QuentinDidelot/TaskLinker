@@ -35,12 +35,21 @@ class MainController extends AbstractController
      */
     #[Route('/inscription', name: 'app_register')]
     public function inscription(Request $request, UserPasswordHasherInterface $passwordHasher): Response {
+        
         $employe = new Employe();
         $form = $this->createForm(RegisterType::class, $employe);
     
         $form->handleRequest($request);
     
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // Ajout de la date d'arrivée
+            $employe->setDateArrivee(new \DateTime());
+    
+            // Activation du compte par défaut
+            $employe->setActif(true);
+
+            // Hashage du mot de passe
             $password = $passwordHasher->hashPassword(
                 $employe,
                 $employe->getPassword() 
