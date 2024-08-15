@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Enum\StatutLibelle;
 use App\Repository\StatutRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -14,43 +13,22 @@ class Statut
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
-    private string $libelle;
-
-    #[ORM\ManyToOne(targetEntity: Projet::class, inversedBy: 'statuts')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Projet $projet = null;
+    #[ORM\Column(length: 255)]
+    private ?string $libelle = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getLibelle(): string
+    public function getLibelle(): ?string
     {
         return $this->libelle;
     }
 
-    public function setLibelle(StatutLibelle $libelle): static
+    public function setLibelle(string $libelle): static
     {
-        $this->libelle = $libelle->value;
-
-        return $this;
-    }
-
-    public function getStatutLibelle(): StatutLibelle
-    {
-        return StatutLibelle::from($this->libelle);
-    }
-
-    public function getProjet(): ?Projet
-    {
-        return $this->projet;
-    }
-
-    public function setProjet(?Projet $projet): static
-    {
-        $this->projet = $projet;
+        $this->libelle = $libelle;
 
         return $this;
     }

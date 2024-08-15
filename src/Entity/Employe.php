@@ -7,53 +7,55 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use App\Enum\EmployeRole;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: EmployeRepository::class)]
-#[UniqueEntity(fields: ['email'], message: 'Cet email est déjà utilisé')]
+#[UniqueEntity('email')]
 class Employe implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $nom = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $prenom = null;
-
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Email]
     private ?string $email = null;
 
-    #[ORM\Column(length: 255, type: 'string', enumType: EmployeRole::class)]
-    private ?EmployeRole $role = null;
+    #[ORM\Column]
+    private array $roles = [];
 
-    #[ORM\Column(length: 255)]
-    private ?string $contrat = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $date_arrivee = null;
-
-    #[ORM\Column(type: Types::BOOLEAN)]
-    private ?bool $actif = null;
-
-    #[ORM\Column(length: 255)]
+    /**
+     * @var string The hashed password
+     */
+    #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\OneToMany(mappedBy: 'employe', targetEntity: Tache::class)]
-    private Collection $taches;
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank]
+    private ?string $nom = null;
 
-    #[ORM\ManyToMany(targetEntity: Projet::class, inversedBy: 'employes')]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank]
+    private ?string $prenom = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank]
+    private ?string $statut = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[Assert\NotBlank]
+    private ?\DateTimeInterface $dateArrivee = null;
+
+    #[ORM\ManyToMany(targetEntity: Projet::class, mappedBy: 'employes')]
     private Collection $projets;
 
     public function __construct()
     {
-        $this->taches = new ArrayCollection();
         $this->projets = new ArrayCollection();
     }
 
@@ -62,14 +64,20 @@ class Employe implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
     public function getNom(): ?string
     {
         return $this->nom;
     }
 
-    public function setNom(string $nom): self
+    public function setNom(?string $nom): static
     {
         $this->nom = $nom;
+
         return $this;
     }
 
@@ -78,79 +86,21 @@ class Employe implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->prenom;
     }
 
-    public function setPrenom(string $prenom): self
+    public function setPrenom(?string $prenom): static
     {
         $this->prenom = $prenom;
+
         return $this;
     }
 
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): self
+    public function setEmail(string $email): static
     {
         $this->email = $email;
+
         return $this;
     }
 
-    public function getRole(): ?EmployeRole
-    {
-        return $this->role;
-    }
-
-    public function setRole(EmployeRole $role): self
-    {
-        $this->role = $role;
-        return $this;
-    }
-
-    public function getContrat(): ?string
-    {
-        return $this->contrat;
-    }
-
-    public function setContrat(string $contrat): self
-    {
-        $this->contrat = $contrat;
-        return $this;
-    }
-
-    public function getDateArrivee(): ?\DateTimeInterface
-    {
-        return $this->date_arrivee;
-    }
-
-    public function setDateArrivee(\DateTimeInterface $date_arrivee): self
-    {
-        $this->date_arrivee = $date_arrivee;
-        return $this;
-    }
-
-    public function isActif(): ?bool
-    {
-        return $this->actif;
-    }
-
-    public function setActif(bool $actif): self
-    {
-        $this->actif = $actif;
-        return $this;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
-        return $this;
-    }
-
-     /**
+    /**
      * A visual identifier that represents this user.
      *
      * @see UserInterface
@@ -160,52 +110,69 @@ class Employe implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->email;
     }
 
+    /**
+     * @see UserInterface
+     */
     public function getRoles(): array
     {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
 
-        return [$this->role?->value ?? 'ROLE_USER'];
+        return array_unique($roles);
     }
 
-    public function getSalt(): ?string
+    public function setRoles(array $roles): static
     {
-        return null;
-    }
-
-    public function eraseCredentials(): void
-    {
-
-    }
-
-    public function getInitiales(): string
-    {
-        return strtoupper(substr($this->prenom, 0, 1) . substr($this->nom, 0, 1));
-    }
-
-    /**
-     * @return Collection<int, Tache>
-     */
-    public function getTaches(): Collection
-    {
-        return $this->taches;
-    }
-
-    public function addTache(Tache $tache): self
-    {
-        if (!$this->taches->contains($tache)) {
-            $this->taches->add($tache);
-            $tache->setEmploye($this);
-        }
+        $this->roles = $roles;
 
         return $this;
     }
 
-    public function removeTache(Tache $tache): self
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
     {
-        if ($this->taches->removeElement($tache)) {
-            if ($tache->getEmploye() === $this) {
-                $tache->setEmploye(null);
-            }
-        }
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(?string $statut): static
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getDateArrivee(): ?\DateTimeInterface
+    {
+        return $this->dateArrivee;
+    }
+
+    public function setDateArrivee(?\DateTimeInterface $dateArrivee): static
+    {
+        $this->dateArrivee = $dateArrivee;
 
         return $this;
     }
@@ -218,7 +185,7 @@ class Employe implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->projets;
     }
 
-    public function addProjet(Projet $projet): self
+    public function addProjet(Projet $projet): static
     {
         if (!$this->projets->contains($projet)) {
             $this->projets->add($projet);
@@ -228,11 +195,23 @@ class Employe implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeProjet(Projet $projet): self
+    public function removeProjet(Projet $projet): static
     {
         if ($this->projets->removeElement($projet)) {
             $projet->removeEmploye($this);
         }
+
+        return $this;
+    }
+
+    public function isAdmin(): bool 
+    {
+        return in_array('ROLE_ADMIN', $this->roles);
+    }
+
+    public function setAdmin(bool $admin): static 
+    {
+        $this->roles = $admin ? ['ROLE_ADMIN'] : [];
 
         return $this;
     }

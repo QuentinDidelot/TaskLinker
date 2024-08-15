@@ -3,81 +3,135 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Employe;
+use App\Repository\EmployeRepository;
 use App\Form\EmployeType;
-
-#[Route('/employe', name: 'app_employe')]
+use App\Form\RegisterType;
+use App\Entity\Employe;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class EmployeController extends AbstractController
 {
-
-    private $employeRepository;
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(
+        private EmployeRepository $employeRepository,
+        private EntityManagerInterface $entityManager,
+    )
     {
-        $this->entityManager = $entityManager;
-        $this->employeRepository = $entityManager->getRepository(Employe::class);
+
     }
 
-    /**
-     * Afficher la liste des employés
-     */
-    #[Route('', name: '_list')]
-    public function showAllEmploye(): Response
+    #[Route('/bienvenue', name: 'app_bienvenue')]
+    public function bienvenue(): Response
     {
-        // Récupération des employés dans une base de données
-        $employes = $this->employeRepository->findAll();
-        
-        return $this->render('employe/employes-liste.html.twig', ['employes' => $employes]);
+        return $this->render('auth/bienvenue.html.twig');
     }
 
-    /**
-     * Afficher les détails d'un employé avec la possibilité de le modifier
-     */
-    #[Route('/{id}', name: '_detail')]
-    public function detailEmploye(int $id, Request $request): Response {
-        $employe = $this->employeRepository->find($id);
+    #[Route('/connexion', name: 'app_login')]
+    public function login(AuthenticationUtils $authenticationUtils): Response
+    {
+        $erreur = $authenticationUtils->getLastAuthenticationError();
+        $email = $authenticationUtils->getLastUsername();
 
-        if (!$employe) {
-            throw $this->createNotFoundException('Aucun employé trouvé avec cet identifiant.');
-        }
+        return $this->render('auth/login.html.twig', [
+            'email' => $email,
+            'erreur'         => $erreur,
+        ]);
+    }
 
-        // Formulaire pour modifier un employé
-        $form = $this->createForm(EmployeType::class, $employe);
+    #[Route('/deconnexion', name: 'app_logout')]
+    public function logout(): never
+    {
+    
+    }
+
+
+    #[Route('/inscription', name: 'app_register')]
+    public function register(Request $request, UserPasswordHasherInterface $hasher): Response
+    {
+        $employe = new Employe();
+        $employe
+            ->setStatut('CDI')
+            ->setDateArrivee(new \DateTime());
+
+        $form = $this->createForm(RegisterType::class, $employe);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if($form->isSubmitted() && $form->isValid()) {
+            $employe->setPassword($hasher->hashPassword($employe, $employe->getPassword()));
 
             $this->entityManager->persist($employe);
             $this->entityManager->flush();
-
-            return $this->redirectToRoute('app_employe_detail', ['id' => $employe->getId()]);
+            return $this->redirectToRoute('app_projets');
         }
-
-        return $this->render('employe/employes-details.html.twig', [
-            'employe' => $employe,
-            'form' => $form->createView()]);
+        
+        return $this->render('auth/register.html.twig', [
+            'form' => $form,
+        ]);
     }
 
-    /**
-     * Supprimer un employé
-     */
-    #[Route('/{id}/delete', name: '_delete')] 
-    public function deleteEmploye(int $id): Response {
+    #[Route('/employes', name: 'app_employes')]
+    public function employes(): Response
+    {
+        $employes = $this->employeRepository->findAll();
+        
+        return $this->render('employe/liste.html.twig', [
+            'employes' => $employes,
+        ]);
+    }
+
+    #[Route('/employes/{id}', name: 'app_employe')]
+    public function employe($id): Response
+    {
         $employe = $this->employeRepository->find($id);
 
-        if (!$employe) {
-            throw $this->createNotFoundException('Aucun employé trouvé avec cet identifiant.');
+        if(!$employe) {
+            return $this->redirectToRoute('app_employes');
+        }
+        
+        return $this->render('employe/employe.html.twig', [
+            'employe' => $employe,
+        ]);
+    }
+
+    #[Route('/employes/{id}/supprimer', name: 'app_employe_delete')]
+    public function supprimerEmploye($id): Response
+    {
+        $employe = $this->employeRepository->find($id);
+
+        if(!$employe) {
+            return $this->redirectToRoute('app_employes');
         }
 
         $this->entityManager->remove($employe);
         $this->entityManager->flush();
+        
+        return $this->redirectToRoute('app_employes');
+    }
 
-        return $this->redirectToRoute('app_employe_list');
+    #[Route('/employes/{id}/editer', name: 'app_employe_edit')]
+    public function editerEmploye($id, Request $request): Response
+    {
+        $employe = $this->employeRepository->find($id);
+
+        if(!$employe) {
+            return $this->redirectToRoute('app_employes');
+        }
+
+        $form = $this->createForm(EmployeType::class, $employe);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+            return $this->redirectToRoute('app_employes');
+        }
+
+        return $this->render('employe/employe.html.twig', [
+            'employe' => $employe,
+            'form' => $form->createView(),
+        ]);
     }
 }

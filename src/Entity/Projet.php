@@ -5,11 +5,10 @@ namespace App\Entity;
 use App\Repository\ProjetRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
-#[ORM\HasLifecycleCallbacks]
 class Projet
 {
     #[ORM\Id]
@@ -18,41 +17,21 @@ class Projet
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $nom = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $date_demarrage = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $deadline = null;
 
     #[ORM\Column]
     private ?bool $archive = null;
 
-    #[ORM\PrePersist]
-    public function setDefaultValues(): void
-    {
-        if ($this->date_demarrage === null) {
-            $this->date_demarrage = new \DateTime();
-        }
+    #[ORM\OneToMany(mappedBy: 'projet', targetEntity: Tache::class, orphanRemoval: true)]
+    private Collection $taches;
 
-        if ($this->archive === null) {
-            $this->archive = false;
-        }
-
-        if ($this->deadline === null) {
-            $this->deadline = (new \DateTime())->modify('+2 weeks');
-        }
-    }
-
-    /**
-     * @var Collection<int, Employe>
-     */
-    #[ORM\ManyToMany(targetEntity: Employe::class, mappedBy: 'projets')]
+    #[ORM\ManyToMany(targetEntity: Employe::class, inversedBy: 'projets')]
     private Collection $employes;
 
     public function __construct()
     {
+        $this->taches = new ArrayCollection();
         $this->employes = new ArrayCollection();
     }
 
@@ -66,31 +45,10 @@ class Projet
         return $this->nom;
     }
 
-    public function setNom(string $nom): static
+    public function setNom(?string $nom): static
     {
         $this->nom = $nom;
-        return $this;
-    }
 
-    public function getDateDemarrage(): ?\DateTimeInterface
-    {
-        return $this->date_demarrage;
-    }
-
-    public function setDateDemarrage(\DateTimeInterface $date_demarrage): static
-    {
-        $this->date_demarrage = $date_demarrage;
-        return $this;
-    }
-
-    public function getDeadline(): ?\DateTimeInterface
-    {
-        return $this->deadline;
-    }
-
-    public function setDeadline(\DateTimeInterface $deadline): static
-    {
-        $this->deadline = $deadline;
         return $this;
     }
 
@@ -102,6 +60,37 @@ class Projet
     public function setArchive(bool $archive): static
     {
         $this->archive = $archive;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tache>
+     */
+    public function getTaches(): Collection
+    {
+        return $this->taches;
+    }
+
+    public function addTach(Tache $tach): static
+    {
+        if (!$this->taches->contains($tach)) {
+            $this->taches->add($tach);
+            $tach->setProjet($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTach(Tache $tach): static
+    {
+        if ($this->taches->removeElement($tach)) {
+            // set the owning side to null (unless already changed)
+            if ($tach->getProjet() === $this) {
+                $tach->setProjet(null);
+            }
+        }
+
         return $this;
     }
 
@@ -117,7 +106,6 @@ class Projet
     {
         if (!$this->employes->contains($employe)) {
             $this->employes->add($employe);
-            $employe->addProjet($this);
         }
 
         return $this;
@@ -125,9 +113,7 @@ class Projet
 
     public function removeEmploye(Employe $employe): static
     {
-        if ($this->employes->removeElement($employe)) {
-            $employe->removeProjet($this);
-        }
+        $this->employes->removeElement($employe);
 
         return $this;
     }
