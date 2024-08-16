@@ -11,7 +11,7 @@
     </head>
     <body class="logout-page">
         <header class="logout-header">
-            <img src="{{ asset('img/logo.png') }}" alt="Logo TaskLinker" />
+            <a href="{{ path('app_bienvenue') }}"><img src="{{ asset('img/logo.png') }}" alt="Logo TaskLinker" /></a>
         </header>
         <div id="main-content-logout">
             {% block body %}{% endblock %}

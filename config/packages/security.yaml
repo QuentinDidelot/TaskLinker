@@ -19,6 +19,7 @@ security:
             form_login:
                 login_path: app_login
                 check_path: app_login
+                default_target_path: app_projets
             logout:
                 path: app_logout
 
@@ -35,7 +36,6 @@ security:
         - { path: ^/employes, roles: ROLE_ADMIN }
         - { path: ^/projets, roles: ROLE_USER }
         - { path: ^/taches, roles: ROLE_USER }
-        - { path: ^/$, roles: ROLE_USER }
 
 when@test:
     security:

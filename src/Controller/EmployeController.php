@@ -24,19 +24,19 @@ class EmployeController extends AbstractController
 
     }
 
-    #[Route('/bienvenue', name: 'app_bienvenue')]
+    #[Route('/', name: 'app_bienvenue')]
     public function bienvenue(): Response
     {
-        return $this->render('auth/bienvenue.html.twig');
+        return $this->render('connexion\bienvenue.html.twig');
     }
-
+    
     #[Route('/connexion', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         $erreur = $authenticationUtils->getLastAuthenticationError();
         $email = $authenticationUtils->getLastUsername();
 
-        return $this->render('auth/login.html.twig', [
+        return $this->render('connexion/login.html.twig', [
             'email' => $email,
             'erreur'         => $erreur,
         ]);
@@ -68,7 +68,7 @@ class EmployeController extends AbstractController
             return $this->redirectToRoute('app_projets');
         }
         
-        return $this->render('auth/register.html.twig', [
+        return $this->render('connexion/register.html.twig', [
             'form' => $form,
         ]);
     }
