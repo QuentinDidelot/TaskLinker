@@ -22,7 +22,13 @@ class ProjetController extends AbstractController
         private EntityManagerInterface $entityManager,
         private AuthorizationCheckerInterface $authorizationChecker
     ) {}
-
+    /**
+     * Permet d'accéder à tous les projets à condition d'y être assigné
+     *
+     * @Route("/projets", name="app_projets")
+     *
+     * @return Response Returns a Response object with the rendered template
+     */
     #[Route('/projets', name: 'app_projets')]
     public function projets(): Response
     {
@@ -34,6 +40,15 @@ class ProjetController extends AbstractController
         ]);
     }
 
+    /**
+     * Création d'un nouveau projet
+     * 
+     * @Route("/projets/ajouter", name="app_projet_add")
+     * @IsGranted("ROLE_ADMIN")
+     *
+     * @param Request $request The request object containing the form data.
+     * @return Response Returns a Response object with the rendered template.
+     */
     #[Route('/projets/ajouter', name: 'app_projet_add')]
     #[IsGranted('ROLE_ADMIN')]
     public function ajouterProjet(Request $request): Response
@@ -55,15 +70,20 @@ class ProjetController extends AbstractController
         ]);
     }
 
+    /**
+     * Accède à la page d'un projet en fonction de son identifiant
+     *
+     * @Route("/projets/{id}", name="app_projet")
+     * @IsGranted("acces_projet", "id")
+     *
+     * @param int $id The unique identifier of the project to display.
+     * @return Response Returns a Response object with the rendered project template.
+     */
     #[Route('/projets/{id}', name: 'app_projet')]
     #[IsGranted('acces_projet', 'id')]
     public function projet(int $id): Response
     {  
         $projet = $this->projetRepository->find($id);
-
-        // if (!$projet || $projet->isArchive() || !$this->authorizationChecker->isGranted('acces_projet', $projet)) {
-        //     return $this->render('erreur/acces-refuse.html.twig');
-        // }
 
         $statuts = $this->statutRepository->findAll();
 
@@ -73,6 +93,14 @@ class ProjetController extends AbstractController
         ]);
     }
 
+    /**
+     * Supprime un projet en fonction de son identifiant
+     *
+     * @Route("/projets/{id}/supprimer", name="app_projet_delete")
+     * @IsGranted("ROLE_ADMIN")
+     * @param int $id
+     * @return Response
+     **/
     #[Route('/projets/{id}/archiver', name: 'app_projet_archive')]
     #[IsGranted('ROLE_ADMIN')]
     public function archiverProjet(int $id): Response
@@ -89,6 +117,16 @@ class ProjetController extends AbstractController
         return $this->redirectToRoute('app_projets');
     }
 
+
+    /**
+     * Modifie un projet en fonction de son identifiant
+     *
+     * @Route("/projets/{id}/editer", name="app_projet_edit")
+     * @IsGranted("ROLE_ADMIN")
+     * 
+     * @param int $id
+     * @return Response
+     **/
     #[Route('/projets/{id}/editer', name: 'app_projet_edit')]
     #[IsGranted('ROLE_ADMIN')]
     public function editerProjet(int $id, Request $request): Response

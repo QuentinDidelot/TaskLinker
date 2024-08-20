@@ -39,9 +39,9 @@ class ProjetVoter extends Voter
         // Traitement spécifique selon l'attribut
         if ($attribute === 'acces_projet') {
             $projet = $this->projetRepository->find($subject);
-            // if (!$projet) {
-            //     return false;
-            // }
+            if (!$projet) {
+                return false;
+            }
             return $projet->getEmployes()->contains($user);
         }
 

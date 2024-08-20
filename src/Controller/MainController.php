@@ -21,12 +21,28 @@ class MainController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * Displays the welcome page.
+     *
+     * @Route("/", name="app_bienvenue")
+     *
+     * @return Response The rendered welcome page
+     */
     #[Route('/', name: 'app_bienvenue')]
     public function bienvenue(): Response
     {
         return $this->render('connexion/bienvenue.html.twig');
     }
 
+    /**
+     * Displays the login form and handles user authentication.
+     *
+     * @Route("/connexion", name="app_login")
+     *
+     * @param AuthenticationUtils $authenticationUtils The Symfony authentication utilities
+     *
+     * @return Response The rendered login form or a redirect to the home page if the user is already authenticated
+     */
     #[Route('/connexion', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
@@ -39,6 +55,16 @@ class MainController extends AbstractController
         ]);
     }
 
+
+    /**
+     * Handles the user logout process.
+     *
+     * @Route("/deconnexion", name="app_logout")
+     *
+     * @throws \Exception This method should never be reached as Symfony automatically handles the logout process.
+     *
+     * @return never This function does not return any value, it throws an exception instead.
+     */
     #[Route('/deconnexion', name: 'app_logout')]
     public function logout(): never
     {
@@ -46,6 +72,20 @@ class MainController extends AbstractController
         throw new \Exception('This method should never be reached!');
     }
 
+
+    /**
+     * Handles the user registration process.
+     *
+     * This function is responsible for creating a new user account, validating the registration form,
+     * hashing the user's password, and persisting the new user in the database.
+     *
+     * @Route("/inscription", name="app_register")
+     *
+     * @param Request $request The Symfony request object, containing the user's input data
+     * @param UserPasswordHasherInterface $hasher The Symfony password hasher service, used to hash the user's password
+     *
+     * @return Response The rendered registration form or a redirect to the project list page if the registration is successful
+     */
     #[Route('/inscription', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $hasher): Response
     {
