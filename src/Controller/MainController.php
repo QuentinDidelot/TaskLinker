@@ -11,6 +11,13 @@ use App\Entity\Employe;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\Writer\PngWriter;
+use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Google\GoogleAuthenticatorInterface;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Scheb\TwoFactorBundle\Model\Google\TwoFactorInterface;
 
 class MainController extends AbstractController
 {
@@ -73,6 +80,42 @@ class MainController extends AbstractController
     }
 
 
+    #[Route('/2fa/qrcode', name: '2fa_qrcode')]
+    public function displayGoogleAuthenticatorQrCode(GoogleAuthenticatorInterface $googleAuthenticator): Response
+    {
+        $user = $this->getUser();
+
+        // Vérifie que l'utilisateur est bien une instance de TwoFactorInterface
+        if (!$user instanceof TwoFactorInterface) {
+            throw new \LogicException('User is not authenticated.');
+        }
+
+        // Récupére le contenu du QR code à partir de Google Authenticator
+        $qrContent = $googleAuthenticator->getQRContent($user);
+
+        // Génère le QR code
+        $qrCode = Builder::create()
+            ->writer(new PngWriter())
+            ->data($qrContent)
+            ->encoding(new Encoding('UTF-8'))
+            ->errorCorrectionLevel(ErrorCorrectionLevel::High)
+            ->size(200)
+            ->margin(10)
+            ->roundBlockSizeMode(RoundBlockSizeMode::Margin)
+            ->build();
+
+        // Retourne l'image du QR code
+        return new Response($qrCode->getString(), 200, ['Content-Type' => 'image/png']);
+    }
+
+
+    #[Route('/2fa', name: '2fa_login')]
+    public function displayGoogleAuthenticator(): Response
+    {
+        return $this->render('connexion/2fa.html.twig', [
+            'qrCode' => $this->generateUrl('2fa_qrcode'),
+        ]);
+    }
     /**
      * Handles the user registration process.
      *
@@ -87,7 +130,7 @@ class MainController extends AbstractController
      * @return Response The rendered registration form or a redirect to the project list page if the registration is successful
      */
     #[Route('/inscription', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $hasher): Response
+    public function register(Request $request, UserPasswordHasherInterface $hasher, GoogleAuthenticatorInterface $googleAuth): Response
     {
         $employe = new Employe();
         $employe
@@ -97,16 +140,17 @@ class MainController extends AbstractController
         $form = $this->createForm(RegisterType::class, $employe);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if($form->isSubmitted() && $form->isValid()) {
             $employe->setPassword($hasher->hashPassword($employe, $employe->getPassword()));
+            $employe->setGoogleAuthenticatorSecret($googleAuth->generateSecret());
 
             $this->entityManager->persist($employe);
             $this->entityManager->flush();
-            return $this->redirectToRoute('app_projets'); // Assurez-vous que cette route existe
+            return $this->redirectToRoute('app_projets');
         }
-
+        
         return $this->render('connexion/register.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 }

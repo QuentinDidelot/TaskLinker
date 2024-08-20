@@ -604,6 +604,10 @@ div#current-user .avatar {
     font-weight: 700;
 }
 
+form .qrcode {
+    justify-content: center;
+    align-items: center;
+}
 @media (max-width: 992px) {
     nav {
         width: 150px;
